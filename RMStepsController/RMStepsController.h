@@ -66,11 +66,6 @@
 - (NSArray *)stepViewControllers;
 
 /**
- The index into `stepViewControllers` of the current step.
- */
--(NSInteger) currentStepIndex;
-
-/**
  Call this method to proceed to the next step. When you call this method when already in the last step `-[RMStepsController finishedAllSteps]`will be called.
  */
 - (void)showNextStep;

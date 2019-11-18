@@ -52,11 +52,7 @@
 
 #pragma mark - Helper Classes
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @interface RMStepSeperatorView : UIView<CAAnimationDelegate>
-#else
-@interface RMStepSeperatorView : UIView
-#endif
 
 @property (nonatomic, strong) CAShapeLayer *leftShapeLayer;
 @property (nonatomic, strong) CAShapeLayer *rightShapeLayer;
@@ -87,7 +83,7 @@
 #pragma mark - Properties
 - (UIColor *)seperatorColor {
     if(!_seperatorColor) {
-        self.seperatorColor = [UIColor colorWithWhite:0 alpha:0.3];
+        self.seperatorColor = [ColorUtil appThemeMediumLightGrayColor];//[UIColor colorWithWhite:0 alpha:0.3];
     }
     
     return _seperatorColor;
@@ -252,11 +248,12 @@
         
         self.cancelButtonXConstraint = [[NSLayoutConstraint constraintsWithVisualFormat:@"|-(0)-[_cancelButton]" options:0 metrics:metricsDict views:bindingsDict] lastObject];
         [self addConstraint:self.cancelButtonXConstraint];
+        self.barTintColor = [ColorUtil appThemeWhiteColor];
         
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[_topLine(0.5)]-(43)-[_bottomLine(0.5)]-(0)-|" options:0 metrics:metricsDict views:bindingsDict]];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[_cancelButton(43)]-(0.5)-|" options:0 metrics:metricsDict views:bindingsDict]];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[_cancelSeperator(43)]-(0.5)-|" options:0 metrics:metricsDict views:bindingsDict]];
-        
+        self.backgroundColor = [ColorUtil appThemeMediumLightGrayColor];
         [self addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(recognizedTap:)]];
     }
     return self;
@@ -265,7 +262,7 @@
 #pragma mark - Properties
 - (UIColor *)seperatorColor {
     if(!_seperatorColor) {
-        self.seperatorColor = [UIColor colorWithWhite:0.75 alpha:1];
+        self.seperatorColor = [ColorUtil appThemeMediumLightGrayColor];
     }
     
     return _seperatorColor;
@@ -332,7 +329,9 @@
 - (UIButton *)cancelButton {
     if(!_cancelButton) {
         self.cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_cancelButton setTitle:@"X" forState:UIControlStateNormal];
+       // [_cancelButton setTitle:@"X" forState:UIControlStateNormal];
+        [_cancelButton setImage:[UIImage imageNamed:@"close_gray_64"] forState:UIControlStateNormal];
+        [_cancelButton setImageEdgeInsets:UIEdgeInsetsMake(10, 14, 10, 14)];
         _cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
         [_cancelButton setTitleColor:[UIColor colorWithWhite:142./255. alpha:0.5] forState:UIControlStateNormal];
         
@@ -382,8 +381,12 @@
         } else
             [self layoutIfNeeded];
         
+        //[self updateViewConstraints:newIndexOfSelectedStep];
         [self updateStepsAnimated:animated];
+       // [self reloadData];
     } else {
+       //  [self reloadData];
+        //[self updateViewConstraints:newIndexOfSelectedStep];
         [self updateStepsAnimated:NO];
     }
 }
@@ -400,8 +403,9 @@
             void (^stepAnimations)(void) = ^(void) {
                 step.stepView.backgroundColor = step.enabledBarColor;
                 step.titleLabel.textColor = step.enabledTextColor;
-                step.numberLabel.textColor = step.enabledTextColor;
-                step.circleLayer.strokeColor = step.enabledTextColor.CGColor;
+                step.numberLabel.textColor = [ColorUtil appThemeWhiteColor];
+                step.circleLayer.fillColor = step.disabledTextColor.CGColor;//step.enabledTextColor;
+               // step.circleLayer.strokeColor = step.enabledTextColor.CGColor;
                 step.hideNumberLabel = NO;
             };
             
@@ -416,8 +420,9 @@
             void (^stepAnimations)(void) = ^(void) {
                 step.stepView.backgroundColor = step.selectedBarColor;
                 step.titleLabel.textColor = step.selectedTextColor;
-                step.numberLabel.textColor = step.selectedTextColor;
-                step.circleLayer.strokeColor = step.selectedTextColor.CGColor;
+                step.numberLabel.textColor = [ColorUtil appThemeWhiteColor];
+                step.circleLayer.fillColor = step.selectedTextColor.CGColor;
+                //step.circleLayer.strokeColor = step.selectedTextColor.CGColor;
                 step.hideNumberLabel = self.hideNumberLabelWhenActiveStep;
             };
             
@@ -432,8 +437,9 @@
             void (^stepAnimations)(void) = ^(void) {
                 step.stepView.backgroundColor = step.disabledBarColor;
                 step.titleLabel.textColor = step.disabledTextColor;
-                step.numberLabel.textColor = step.disabledTextColor;
-                step.circleLayer.strokeColor = step.disabledTextColor.CGColor;
+                step.numberLabel.textColor = [ColorUtil appThemeWhiteColor];
+                step.circleLayer.fillColor = step.disabledTextColor.CGColor;
+                //step.circleLayer.strokeColor = step.disabledTextColor.CGColor;
                 step.hideNumberLabel = NO;
             };
             
@@ -482,7 +488,16 @@
         UIView *leftEnd = leftSeperator ? leftSeperator : self.cancelSeperator;
         UIView *rightEnd = rightSeperator ? rightSeperator : self;
         UIView *stepView = step.stepView;
-        NSNumber *minimalStepWidth = @(RM_MINIMAL_STEP_WIDTH);
+        NSNumber *minimalStepWidth = @(40);
+        
+        if (i == 0) {
+            minimalStepWidth = @(55);
+        }else if(i == 1 ){
+             minimalStepWidth =  @(85);
+        }else if( i == 2 ){
+            minimalStepWidth =  @(85);
+        }
+        
         NSNumber *seperatorWidth = @(RM_SEPERATOR_WIDTH);
         
         NSDictionary *bindingsDict = NSDictionaryOfVariableBindings(leftEnd, rightEnd, stepView);
@@ -514,19 +529,81 @@
         [self updateStepsAnimated:NO];
     }
 }
-
+/*
+-(void)updateViewConstraints:(NSInteger)selectedIndex{
+    
+    NSMutableArray *listWidth = [NSMutableArray array];
+    if (selectedIndex == 0) {
+        listWidth = [NSMutableArray arrayWithObjects:@(40),@(DEVICE_SIZE_WIDTH/3),@(DEVICE_SIZE_WIDTH/3), nil];
+    }else if(selectedIndex == 1){
+        listWidth = [NSMutableArray arrayWithObjects:@(120),@(DEVICE_SIZE_WIDTH/3),@(40), nil];
+    }else if(selectedIndex == 1){
+        listWidth = [NSMutableArray arrayWithObjects:@(DEVICE_SIZE_WIDTH/3),@(DEVICE_SIZE_WIDTH/3),@(40), nil];
+    }
+     __block NSUInteger numberOfSteps = [self.dataSource numberOfStepsInStepsBar:self];
+     for(NSUInteger i=0 ; i< numberOfSteps ; i++) {
+         
+         RMStep *step = [self.dataSource stepsBar:self stepAtIndex:i];
+         step.numberLabel.text = [NSString stringWithFormat:@"%lu", (long unsigned)i+1];
+    RMStepSeperatorView *leftSeperator = nil;
+    RMStepSeperatorView *rightSeperator = nil;
+    NSNumber *minimalStepWidth;
+    
+  
+         minimalStepWidth = [listWidth objectAtIndex:i];
+    
+    NSNumber *seperatorWidth = @(RM_SEPERATOR_WIDTH);
+         UIView *leftEnd = leftSeperator ? leftSeperator : self.cancelSeperator;
+         UIView *rightEnd = rightSeperator ? rightSeperator : self;
+         UIView *stepView = step.stepView;
+    NSDictionary *bindingsDict = NSDictionaryOfVariableBindings(leftEnd, rightEnd, stepView);
+    NSDictionary *metricsDict = NSDictionaryOfVariableBindings(minimalStepWidth, seperatorWidth);
+    
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[stepView(44)]-(0)-|" options:0 metrics:metricsDict views:bindingsDict]];
+    if(rightSeperator) {
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[leftEnd]-(0)-[stepView]-(0)-[rightEnd]" options:0 metrics:metricsDict views:bindingsDict]];
+        
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[rightEnd(seperatorWidth)]" options:0 metrics:metricsDict views:bindingsDict]];
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[rightEnd(44)]-(0)-|" options:0 metrics:metricsDict views:bindingsDict]];
+    } else {
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[leftEnd]-(0)-[stepView]-(0)-|" options:0 metrics:metricsDict views:bindingsDict]];
+    }
+    
+    NSArray *widthConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"[stepView(minimalStepWidth)]" options:0 metrics:metricsDict views:bindingsDict];
+    if(i != self.indexOfSelectedStep) {
+        [self addConstraint:[widthConstraints lastObject]];
+    }
+    
+    if(leftSeperator && rightSeperator) {
+        [self.stepDictionaries addObject:@{RM_LEFT_SEPERATOR_KEY: leftSeperator, RM_STEP_KEY: step, RM_RIGHT_SEPERATOR_KEY: rightSeperator, RM_STEP_WIDTH_CONSTRAINT_KEY: [widthConstraints lastObject]}];
+    } else if(leftSeperator && !rightSeperator) {
+        [self.stepDictionaries addObject:@{RM_LEFT_SEPERATOR_KEY: leftSeperator, RM_STEP_KEY: step, RM_STEP_WIDTH_CONSTRAINT_KEY: [widthConstraints lastObject]}];
+    } else if(!leftSeperator && rightSeperator) {
+        [self.stepDictionaries addObject:@{RM_STEP_KEY: step, RM_RIGHT_SEPERATOR_KEY: rightSeperator, RM_STEP_WIDTH_CONSTRAINT_KEY: [widthConstraints lastObject]}];
+    }
+    
+    [self updateStepsAnimated:NO];
+     }
+}*/
 - (void)cancelButtonTapped:(id)sender {
     [self.delegate stepsBarDidSelectCancelButton:self];
 }
 
 - (void)recognizedTap:(UIGestureRecognizer *)recognizer {
     CGPoint touchLocation = [recognizer locationInView:self];
+    
+    if (CGRectContainsPoint(_cancelButton.frame,touchLocation)) {
+        [self.delegate stepsBarDidSelectCancelButton:self];
+        return;
+    }
     for(NSDictionary *aStepDict in self.stepDictionaries) {
         RMStep *step = aStepDict[RM_STEP_KEY];
         
         if(CGRectContainsPoint(step.stepView.frame, touchLocation)) {
             NSInteger index = [self.stepDictionaries indexOfObject:aStepDict];
             if(index < self.indexOfSelectedStep && self.allowBackward) {
+                [self.delegate stepsBar:self shouldSelectStepAtIndex:index];
+            }else if(index > self.indexOfSelectedStep && self.allowForward){
                 [self.delegate stepsBar:self shouldSelectStepAtIndex:index];
             }
         }

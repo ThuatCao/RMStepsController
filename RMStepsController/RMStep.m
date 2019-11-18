@@ -46,6 +46,7 @@
     NSArray* leftMarginConstraints;
     if (self.hideNumberLabel) {
         leftMarginConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"|-(8)-[titleLabel]-(0)-|" options:0 metrics:nil views:bindingsDict];
+        
     } else {
         leftMarginConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"|-(40)-[titleLabel]-(0)-|" options:0 metrics:nil views:bindingsDict];
         [_stepView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-(11)-[numberLabel]-(9)-[titleLabel]" options:0 metrics:nil views:bindingsDict]];
@@ -68,7 +69,7 @@
         
         [_stepView addSubview:self.numberLabel];
         [_stepView addSubview:self.titleLabel];
-        
+        _stepView.backgroundColor = [ColorUtil appThemeMediumLightGrayColor];
         [self updateConstrains];
     }
     
@@ -79,10 +80,10 @@
     if(!_numberLabel) {
         self.numberLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         _numberLabel.text = @"0";
-        _numberLabel.textColor = self.disabledTextColor;
+        _numberLabel.textColor = [UIColor whiteColor];
         _numberLabel.textAlignment = NSTextAlignmentCenter;
         _numberLabel.backgroundColor = [UIColor clearColor];
-        _numberLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]];
+        _numberLabel.font = [FontUtil appFontMediumWithSize:12];
         _numberLabel.translatesAutoresizingMaskIntoConstraints = NO;
     }
     
@@ -96,7 +97,7 @@
         _titleLabel.textColor = self.disabledTextColor;
         _titleLabel.textAlignment = NSTextAlignmentLeft;
         _titleLabel.backgroundColor = [UIColor clearColor];
-        _titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]];
+        _titleLabel.font = [FontUtil appFontMediumWithSize:14];
         _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     }
     
@@ -105,13 +106,13 @@
 
 - (CAShapeLayer *)circleLayer {
     if(!_circleLayer) {
-        NSInteger radius = 12;
+        NSInteger radius = 10;
         
         self.circleLayer = [CAShapeLayer layer];
         _circleLayer.path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, 2.0*radius, 2.0*radius) cornerRadius:radius].CGPath;
-        _circleLayer.position = CGPointMake(9, 10);
-        _circleLayer.fillColor = [UIColor clearColor].CGColor;
-        _circleLayer.strokeColor = self.disabledTextColor.CGColor;
+        _circleLayer.position = CGPointMake(11, 12);
+        _circleLayer.fillColor = [UIColor grayColor].CGColor;
+       // _circleLayer.strokeColor = [UIColor grayColor].CGColor;
         _circleLayer.lineWidth = 1;
     }
     
@@ -128,7 +129,7 @@
 
 - (UIColor *)selectedBarColor {
     if(!_selectedBarColor) {
-        self.selectedBarColor = [UIColor colorWithRed:23./255. green:220./255. blue:108./255. alpha:1];
+        self.selectedBarColor = [UIColor clearColor];
     }
     
     return _selectedBarColor;
@@ -136,7 +137,7 @@
 
 - (UIColor *)enabledBarColor {
     if(!_enabledBarColor) {
-        self.enabledBarColor = [UIColor colorWithWhite:142./255. alpha:0.5];
+        self.enabledBarColor = [UIColor clearColor];
     }
     
     return _enabledBarColor;
@@ -152,7 +153,7 @@
 
 - (UIColor *)selectedTextColor {
     if(!_selectedTextColor) {
-        self.selectedTextColor = [UIColor colorWithWhite:1 alpha:1];
+        self.selectedTextColor = [ColorUtil appThemeSuperDarkTextColor];
     }
     
     return _selectedTextColor;
@@ -160,7 +161,7 @@
 
 - (UIColor *)enabledTextColor {
     if(!_enabledTextColor) {
-        self.enabledTextColor = [UIColor colorWithWhite:1 alpha:1];
+        self.enabledTextColor = [ColorUtil appThemeMediumLightGrayColor];
     }
     
     return _enabledTextColor;
@@ -168,7 +169,7 @@
 
 - (UIColor *)disabledTextColor {
     if(!_disabledTextColor) {
-        self.disabledTextColor = [UIColor colorWithWhite:0.75 alpha:1];
+        self.disabledTextColor = [ColorUtil appThemeMediumLightGrayColor];
     }
     
     return _disabledTextColor;
