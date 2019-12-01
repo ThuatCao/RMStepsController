@@ -25,7 +25,9 @@
 //
 
 #import "RMStepsController.h"
-
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+#define IS_IPHONE_X (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 812.0f)
+#define IS_IPHONE_XS_MAX (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 896.0f)
 @interface RMStepsController () <RMStepsBarDelegate, RMStepsBarDataSource>
 
 @property (nonatomic, strong, readwrite) NSMutableDictionary *results;
@@ -33,6 +35,7 @@
 
 @property (nonatomic, strong, readwrite) RMStepsBar *stepsBar;
 @property (nonatomic, strong) UIView *stepViewControllerContainer;
+@property (nonatomic, strong) UIView *naviBar;
 
 @end
 
@@ -49,19 +52,82 @@
     
     [self.view addSubview:self.stepViewControllerContainer];
     [self.view addSubview:self.stepsBar];
+    [self.view addSubview:self.naviBar];
+    [self.view addSubview:self.backButton];
+    [self.view addSubview:self.naviTitle];
     
     RMStepsBar *stepsBar = self.stepsBar;
     UIView *container = self.stepViewControllerContainer;
+    UIView *navi = self.naviBar;
+    UIButton *backButton = self.backButton;
+    UILabel *title = self.naviTitle;
     
-    NSDictionary *bindingsDict = NSDictionaryOfVariableBindings(stepsBar, container);
+    NSDictionary *bindingsDict = NSDictionaryOfVariableBindings(navi, stepsBar, container,backButton,title);
     
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(0)-[stepsBar]" options:0 metrics:nil views:bindingsDict]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(0)-[container]-(0)-|" options:0 metrics:nil views:bindingsDict]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-0-[stepsBar]-0-|" options:0 metrics:nil views:bindingsDict]];
+    //[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[navi(64)]-[stepsBar]" options:0 metrics:nil views:bindingsDict]];
+     int height = 108;
+    if (IS_IPHONE_X || IS_IPHONE_XS_MAX) {
+         [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[navi(88)]-[stepsBar(44)]-[container]-(0)-|" options:0 metrics:nil views:bindingsDict]];
+        height = 132;
+    }else{
+         [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[navi(64)]-[stepsBar(44)]-[container]-(0)-|" options:0 metrics:nil views:bindingsDict]];
+        height = 108;
+    }
+   
+     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-0-[stepsBar]-0-|" options:0 metrics:nil views:bindingsDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-0-[navi]-0-|" options:0 metrics:nil views:bindingsDict]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-0-[container]-0-|" options:0 metrics:nil views:bindingsDict]];
     
-    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:self.stepsBar attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.topLayoutGuide attribute:NSLayoutAttributeBaseline multiplier:1 constant:44];
-    [self.view addConstraint:constraint];
+     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-12-[backButton(64)]-12-[title]-88-|" options:0 metrics:nil views:bindingsDict]];
+     //[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[backButton]-12-[stepBar]" options:0 metrics:nil views:bindingsDict]];
+    
+  //   [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-44-[title(32)]" options:0 metrics:nil views:bindingsDict]];
+    
+    // [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[title]-12-[stepBar]" options:0 metrics:nil views:bindingsDict]];
+    
+    // [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[backButton]-12-[stepBar]" options:0 metrics:nil views:bindingsDict]];
+    
+//    NSLayoutConstraint *titleConstraint = [NSLayoutConstraint constraintWithItem:self.naviTitle
+//     attribute:NSLayoutAttributeCenterX
+//     relatedBy:NSLayoutRelationEqual
+//        toItem:self.view
+//     attribute:nil
+//    multiplier:1.0f
+//      constant:0.0f];
+//    [self.view addConstraint:titleConstraint];
+    
+    NSLayoutConstraint *titelHeightconstraint = [NSLayoutConstraint constraintWithItem:self.naviTitle attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.naviBar attribute:NSLayoutAttributeBottom multiplier:1 constant:-12];
+       [self.view addConstraint:titelHeightconstraint];
+    
+    NSLayoutConstraint *buttonContraint = [NSLayoutConstraint constraintWithItem:self.backButton attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.naviTitle attribute:NSLayoutAttributeCenterY multiplier:1 constant:0];
+          [self.view addConstraint:buttonContraint];
+    
+//
+//    NSLayoutConstraint *titleContraint = [NSLayoutConstraint constraintWithItem:self.naviTitle
+//        attribute:NSLayoutAttributeBottom
+//        relatedBy:NSLayoutRelationEqual
+//           toItem:self.stepsBar
+//        attribute:NSLayoutAttributeTop
+//       multiplier:1.0f
+//         constant:12.0f];
+//
+//    NSLayoutConstraint *buttonContraint = [NSLayoutConstraint constraintWithItem:self.backButton
+//           attribute:NSLayoutAttributeCenterY
+//           relatedBy:NSLayoutRelationEqual
+//              toItem:self.naviTitle
+//           attribute:NSLayoutAttributeNotAnAttribute
+//          multiplier:1.0f
+//            constant:0.0f];
+    
+   // [self.naviBar addConstraints:titleContraint];
+   // [self.view addConstraints:buttonContraint];
+    //[self.naviBar addConstraint:constraint];
+    
+   
+    
+//
+//    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:self.backButton attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.stepsBar attribute:NSLayoutAttributeBaseline multiplier:1 constant:12];
+//    [self.view addConstraint:constraint];
     
     [self loadStepViewControllers];
     [self showStepViewController:[self.childViewControllers objectAtIndex:0] animated:NO];
@@ -93,6 +159,34 @@
     }
     
     return _stepViewControllerContainer;
+}
+
+-(UILabel *)naviTitle{
+    if (!_naviTitle) {
+        self.naviTitle = [[UILabel alloc] initWithFrame:CGRectZero];
+        _naviTitle.translatesAutoresizingMaskIntoConstraints = NO;
+        _naviTitle.textAlignment = UITextAlignmentCenter;
+    }
+    return _naviTitle;
+}
+
+-(UIButton *)backButton{
+    if (!_backButton) {
+           self.backButton = [[UIButton alloc] initWithFrame:CGRectZero];
+           _backButton.translatesAutoresizingMaskIntoConstraints = NO;
+        _backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+       }
+    
+       return _backButton;
+}
+
+
+-(UIView *)naviBar{
+    if(!_naviBar){
+        self.naviBar = [[UIView alloc] initWithFrame:CGRectZero];
+        _naviBar.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    return _naviBar;
 }
 
 #pragma mark - Helper

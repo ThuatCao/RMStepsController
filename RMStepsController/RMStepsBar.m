@@ -177,11 +177,11 @@
     [super drawRect:rect];
     
     UIBezierPath *bezier = [UIBezierPath bezierPath];
-    [bezier moveToPoint:CGPointMake(0, 0)];
-    [bezier addLineToPoint:CGPointMake(self.frame.size.width-0.5, self.frame.size.height/2)];
-    [bezier addLineToPoint:CGPointMake(0, self.frame.size.height)];
+    [bezier moveToPoint:CGPointMake(0, 15)];
+    [bezier addLineToPoint:CGPointMake(self.frame.size.width-2, self.frame.size.height/2)];
+    [bezier addLineToPoint:CGPointMake(0, self.frame.size.height-15)];
     
-    [bezier setLineWidth:0.5];
+    [bezier setLineWidth:2.5];
     [bezier setLineJoinStyle:kCGLineJoinBevel];
     
     [self.seperatorColor setStroke];
@@ -400,8 +400,9 @@
             void (^stepAnimations)(void) = ^(void) {
                 step.stepView.backgroundColor = step.enabledBarColor;
                 step.titleLabel.textColor = step.enabledTextColor;
-                step.numberLabel.textColor = step.enabledTextColor;
-                step.circleLayer.strokeColor = step.enabledTextColor.CGColor;
+                step.numberLabel.textColor = [UIColor whiteColor];
+                step.circleLayer.fillColor = [UIColor lightGrayColor].CGColor;
+                step.circleLayer.strokeColor = [UIColor clearColor].CGColor;
                 step.hideNumberLabel = NO;
             };
             
@@ -416,8 +417,9 @@
             void (^stepAnimations)(void) = ^(void) {
                 step.stepView.backgroundColor = step.selectedBarColor;
                 step.titleLabel.textColor = step.selectedTextColor;
-                step.numberLabel.textColor = step.selectedTextColor;
-                step.circleLayer.strokeColor = step.selectedTextColor.CGColor;
+                step.numberLabel.textColor = [UIColor whiteColor];
+                step.circleLayer.fillColor = [UIColor blackColor].CGColor;
+                step.circleLayer.strokeColor = [UIColor clearColor].CGColor;
                 step.hideNumberLabel = self.hideNumberLabelWhenActiveStep;
             };
             
@@ -432,8 +434,9 @@
             void (^stepAnimations)(void) = ^(void) {
                 step.stepView.backgroundColor = step.disabledBarColor;
                 step.titleLabel.textColor = step.disabledTextColor;
-                step.numberLabel.textColor = step.disabledTextColor;
-                step.circleLayer.strokeColor = step.disabledTextColor.CGColor;
+                step.numberLabel.textColor = [UIColor whiteColor];
+                step.circleLayer.fillColor = [UIColor lightGrayColor].CGColor;
+                step.circleLayer.strokeColor = [UIColor clearColor].CGColor;
                 step.hideNumberLabel = NO;
             };
             

@@ -42,6 +42,8 @@
 
 @interface RMStepsController : UIViewController
 
+@property (nonatomic, strong) UIButton *backButton;
+@property (nonatomic, strong) UILabel *naviTitle;
 /// @name Properties
 
 /**

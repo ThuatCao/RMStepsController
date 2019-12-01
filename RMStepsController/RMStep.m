@@ -25,7 +25,10 @@
 //
 
 #import "RMStep.h"
-
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+#define IS_IPHONE_X (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 812.0f)
+#define IS_IPHONE_XS_MAX (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 896.0f)
+#define IS_IPHONE_SIX_PLUS  (([[UIScreen mainScreen] bounds].size.height == 736 ))
 @interface RMStep ()
 
 @property (nonatomic, strong, readwrite) UIView *stepView;
@@ -69,7 +72,7 @@
         
         [_stepView addSubview:self.numberLabel];
         [_stepView addSubview:self.titleLabel];
-        _stepView.backgroundColor = [ColorUtil appThemeMediumLightGrayColor];
+        _stepView.backgroundColor = [UIColor lightGrayColor];
         [self updateConstrains];
     }
     
@@ -83,7 +86,7 @@
         _numberLabel.textColor = [UIColor whiteColor];
         _numberLabel.textAlignment = NSTextAlignmentCenter;
         _numberLabel.backgroundColor = [UIColor clearColor];
-        _numberLabel.font = [FontUtil appFontMediumWithSize:12];
+        _numberLabel.font = [UIFont systemFontOfSize:12 weight:UIFontWeightBold];
         _numberLabel.translatesAutoresizingMaskIntoConstraints = NO;
     }
     
@@ -97,7 +100,12 @@
         _titleLabel.textColor = self.disabledTextColor;
         _titleLabel.textAlignment = NSTextAlignmentLeft;
         _titleLabel.backgroundColor = [UIColor clearColor];
-        _titleLabel.font = [FontUtil appFontMediumWithSize:14];
+        if (IS_IPHONE_XS_MAX || IS_IPHONE_SIX_PLUS) {
+            _titleLabel.font = [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
+        }else{
+            _titleLabel.font = [UIFont systemFontOfSize:12 weight:UIFontWeightSemibold];
+        }
+        
         _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     }
     
@@ -111,9 +119,9 @@
         self.circleLayer = [CAShapeLayer layer];
         _circleLayer.path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, 2.0*radius, 2.0*radius) cornerRadius:radius].CGPath;
         _circleLayer.position = CGPointMake(11, 12);
-        _circleLayer.fillColor = [UIColor grayColor].CGColor;
-       // _circleLayer.strokeColor = [UIColor grayColor].CGColor;
-        _circleLayer.lineWidth = 1;
+        _circleLayer.fillColor = [UIColor blackColor].CGColor;
+        _circleLayer.strokeColor = [UIColor clearColor].CGColor;
+        _circleLayer.lineWidth = 0;
     }
     
     return _circleLayer;
@@ -153,7 +161,7 @@
 
 - (UIColor *)selectedTextColor {
     if(!_selectedTextColor) {
-        self.selectedTextColor = [ColorUtil appThemeSuperDarkTextColor];
+        self.selectedTextColor = [UIColor blackColor];
     }
     
     return _selectedTextColor;
@@ -161,7 +169,7 @@
 
 - (UIColor *)enabledTextColor {
     if(!_enabledTextColor) {
-        self.enabledTextColor = [ColorUtil appThemeMediumLightGrayColor];
+        self.enabledTextColor = [UIColor grayColor];
     }
     
     return _enabledTextColor;
@@ -169,7 +177,7 @@
 
 - (UIColor *)disabledTextColor {
     if(!_disabledTextColor) {
-        self.disabledTextColor = [ColorUtil appThemeMediumLightGrayColor];
+        self.disabledTextColor = [UIColor lightGrayColor];
     }
     
     return _disabledTextColor;
